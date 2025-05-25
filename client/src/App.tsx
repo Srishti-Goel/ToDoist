@@ -8,6 +8,8 @@ import SignUp from './SignUp'
 import LogIn from './LogIn'
 import SideNavBar from './navBar'
 import Home from './home'
+import NotFound from './NotFound'
+
 import { useUser } from './UserContext'
 const PALETTE_NUMBER = 6;
 
@@ -41,6 +43,7 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/" element={<Home />} />
         <Route path="/logout" element={<Logout />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <SideNavBar collapsed={collapsed} setCollapsed={setCollapsed} />
     </div>

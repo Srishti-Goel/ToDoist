@@ -39,21 +39,19 @@ const SideNavBar: React.FC<SideNavBarProps> = ({ collapsed, setCollapsed }) => {
     );
 
     // List of elements in the lower part of the sidebar
-    const lowerBar = [
+    const lowerBarAll = [
         { name: 'Profile', icon: <FaUser size={28} />, link: '/profile' },
-        // { name: 'Help', icon: <FaQuestion size={28} />, link: '/help' },
-        {name: 'Logout', icon: <FaSignOutAlt size={28} />, link: '/logout' },
-        {name: 'Log-In', icon: <FaSignInAlt size={28} />, link: '/login'},
-        {name: 'Sign-Up', icon: <FaUserPlus size={28} />, link: '/signup'},
+        { name: 'Logout', icon: <FaSignOutAlt size={28} />, link: '/logout' },
+        { name: 'Log-In', icon: <FaSignInAlt size={28} />, link: '/login' },
+        { name: 'Sign-Up', icon: <FaUserPlus size={28} />, link: '/signup' },
     ];
 
-    console.log("User:", user);
+    // Filter lowerBar based on user state
+    const lowerBar = user
+        ? lowerBarAll.filter(item => item.name !== 'Log-In' && item.name !== 'Sign-Up')
+        : lowerBarAll.filter(item => item.name !== 'Logout' && item.name !== 'Profile');
 
-    if (user) {
-        lowerBar.splice(3, 2); // Remove Log-In and Sign-Up if user is logged in
-    } else {
-        lowerBar.splice(2, 1); // Remove Logout if user is not logged in
-    }
+    console.log("User:", user);
 
     // Collapse navbar on route change
     useEffect(() => {
