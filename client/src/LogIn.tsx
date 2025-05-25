@@ -2,6 +2,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import axios, { type AxiosResponse } from 'axios';
 import AuthForm from './AuthForm';
+import { useUser } from './UserContext';
+import { useNavigate } from 'react-router-dom';
 
 const LogIn: React.FC = () => {
     const [email, setEmail] = React.useState('');
@@ -9,6 +11,8 @@ const LogIn: React.FC = () => {
     const [errorStr, setErrorStr] = React.useState('');
     const [errorPresent, setErrorPresent] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
+    const { user, setUser } = useUser();
+    const navigate = useNavigate();
 
     const fields = [
         { TBName: "Email", type: "email", id: "loginEmail", value: email, onChange: (v: string) => { setErrorPresent(false); setEmail(v); } },
@@ -26,7 +30,9 @@ const LogIn: React.FC = () => {
         }
         axios.post('http://localhost:3000/login', { email, password })
             .then((response: AxiosResponse) => {
-                window.location.href = '/';
+                    setUser({ name: response.data.name, email: response.data.email }); // Set user data
+                    console.log("User logged in:", response.data.name);
+                    navigate('/');
             })
             .catch((error) => {
                 setErrorPresent(true);

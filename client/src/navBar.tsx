@@ -1,27 +1,59 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
+import {
+    FaHome, FaCog, FaQuestion, FaSignOutAlt, FaSignInAlt, FaUserPlus,
+    FaBars, FaTimes,
+    FaUser
+} from 'react-icons/fa';
+import { useUser } from './UserContext';
 
 interface SideNavBarProps {
   collapsed: boolean;
   setCollapsed: (value: boolean) => void;
 }
 
+
+
 const SideNavBar: React.FC<SideNavBarProps> = ({ collapsed, setCollapsed }) => {
     const location = useLocation();
+    const { user, setUser } = useUser();
 
     // List of elements in the upper part of the sidebar
     const upperBar = [
-        { name: 'Home', icon: '🏠', link: '/' },
+        { name: 'Home', icon: <FaHome size={28}/>, link: '/' },
     ];
+
+    const sideBarList = (fields: { name: string; icon: JSX.Element; link: string }[]) => (
+        fields.map((item, index) => (
+            <Link
+                key={index}
+                to={item.link}
+                className={`nav-link text-reset d-flex align-items-center mb-3 ${collapsed ? 'justify-content-center' : ''}`}
+                onClick={() => setCollapsed(true)}
+                style={{ textDecoration: 'none' }}
+            >
+                {!collapsed && <span className="fs-4" style={{ color: 'var(--palette-1)', opacity: '100%' }}>{item.icon}</span>}
+                {!collapsed && <span className="ms-2" style={{ color: 'var(--palette-1)' }}>{item.name}</span>}
+            </Link>
+        ))
+    );
 
     // List of elements in the lower part of the sidebar
     const lowerBar = [
-        { name: 'Settings', icon: '⚙️', link: '/settings' },
-        { name: 'Help', icon: '❓', link: '/help' },
-        {name: 'Logout', icon: '🚪', link: '/logout' },
-        {name: 'Sign-Up', icon: '📝', link: '/signup'},
-        {name: 'Log-In', icon: '🔑', link: '/login'}
+        { name: 'Profile', icon: <FaUser size={28} />, link: '/profile' },
+        // { name: 'Help', icon: <FaQuestion size={28} />, link: '/help' },
+        {name: 'Logout', icon: <FaSignOutAlt size={28} />, link: '/logout' },
+        {name: 'Log-In', icon: <FaSignInAlt size={28} />, link: '/login'},
+        {name: 'Sign-Up', icon: <FaUserPlus size={28} />, link: '/signup'},
     ];
+
+    console.log("User:", user);
+
+    if (user) {
+        lowerBar.splice(3, 2); // Remove Log-In and Sign-Up if user is logged in
+    } else {
+        lowerBar.splice(2, 1); // Remove Logout if user is not logged in
+    }
 
     // Collapse navbar on route change
     useEffect(() => {
@@ -54,7 +86,8 @@ const SideNavBar: React.FC<SideNavBarProps> = ({ collapsed, setCollapsed }) => {
                     ? 'transparent'
                     : 'var(--palette-5)',
                 transition: 'width 0.3s, background-color 0.3s',
-                color: collapsed ? 'transparent' : "var(--palette-6)"
+                color: collapsed ? 'transparent' : "var(--palette-6)",
+                opacity:'80%'
             }}
         >
             <button
@@ -69,30 +102,12 @@ const SideNavBar: React.FC<SideNavBarProps> = ({ collapsed, setCollapsed }) => {
                 onClick={() => setCollapsed(!collapsed)}
                 aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
-                {collapsed ? <span>&#9776;</span> : <span>&#10005;</span>}
+                {collapsed ? <span style={{fontSize:'20pt'}}>&#9776;</span> : <span style={{fontSize:'20pt'}}>&#10005;</span>}
             </button>
 
-            {upperBar.map((item, index) => (
-                <a
-                    key={index}
-                    href={item.link}
-                    className={`nav-link text-reset d-flex align-items-center mb-3 ${collapsed ? 'justify-content-center' : ''}`}
-                >
-                    <span className="fs-4">{item.icon}</span>
-                    {!collapsed && <span className="ms-2">{item.name}</span>}
-                </a>
-            ))}
-            {!collapsed && <hr />}
-            {lowerBar.map((item, index) => (
-                <a
-                    key={index}
-                    href={item.link}
-                    className={`nav-link text-reset d-flex align-items-center mb-3 ${collapsed ? 'justify-content-center' : ''}`}
-                >
-                    <span className="fs-4">{item.icon}</span>
-                    {!collapsed && <span className="ms-2">{item.name}</span>}
-                </a>
-            ))}
+            {sideBarList(upperBar)}
+            {!collapsed && <hr style={{color: 'var(--palette-1)', borderWidth: '5pt'}}/>}
+            {sideBarList(lowerBar)}
         </div>
     );
 };

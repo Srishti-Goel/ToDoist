@@ -2,6 +2,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import axios, { type AxiosResponse } from 'axios';
 import AuthForm from './AuthForm';
+import { useUser } from './UserContext';
+import { useNavigate } from 'react-router-dom';
 
 const SignUp: React.FC = () => {
     const [name, setName] = React.useState('');
@@ -11,6 +13,8 @@ const SignUp: React.FC = () => {
     const [errorStr, setErrorStr] = React.useState('');
     const [errorPresent, setErrorPresent] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
+    const { setUser } = useUser();
+    const navigate = useNavigate();
 
     const fields = [
         { TBName: "Name", type: "text", id: "signUpName", value: name, onChange: (v: string) => { setErrorPresent(false); setName(v); } },
@@ -36,7 +40,8 @@ const SignUp: React.FC = () => {
         }
         axios.post('http://localhost:3000/register', { name, email, password })
             .then((response: AxiosResponse) => {
-                window.location.href = '/';
+                setUser({ name, email }); // Set user after successful registration
+                navigate('/');
             })
             .catch((error) => {
                 setErrorPresent(true);

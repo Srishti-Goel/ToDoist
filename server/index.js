@@ -79,7 +79,12 @@ app.post("/login", (req, res) => {
                 return res.status(401).json({ message: 'Invalid email or password' });
             }
             console.log("User logged in successfully");
-            return res.status(200).json({ message: 'Login successful', user });
+            // Return only name and email in the response
+            return res.status(200).json({
+                message: 'Login successful',
+                name: user.name,
+                email: user.email
+            });
         })
         .catch((error) => {
             console.error("Error logging in user:", error);
