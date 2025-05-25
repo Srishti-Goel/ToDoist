@@ -9,10 +9,41 @@ interface SideNavBarProps {
 const SideNavBar: React.FC<SideNavBarProps> = ({ collapsed, setCollapsed }) => {
     const location = useLocation();
 
+    // List of elements in the upper part of the sidebar
+    const upperBar = [
+        { name: 'Home', icon: '🏠', link: '/' },
+    ];
+
+    // List of elements in the lower part of the sidebar
+    const lowerBar = [
+        { name: 'Settings', icon: '⚙️', link: '/settings' },
+        { name: 'Help', icon: '❓', link: '/help' },
+        {name: 'Logout', icon: '🚪', link: '/logout' },
+        {name: 'Sign-Up', icon: '📝', link: '/signup'},
+        {name: 'Log-In', icon: '🔑', link: '/login'}
+    ];
+
     // Collapse navbar on route change
     useEffect(() => {
         setCollapsed(true);
     }, [location]);
+
+    // Handle click outside to collapse the navbar
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as HTMLElement;
+            if (!target.closest('.sidebar') && !target.closest('.btn')) {
+                setCollapsed(true);
+            }
+        };
+
+        document.addEventListener('click', handleClickOutside);
+        return () => {
+            document.removeEventListener('click', handleClickOutside);
+        };
+    }, [setCollapsed]);
+
+
 
     return (
         <div
@@ -40,22 +71,28 @@ const SideNavBar: React.FC<SideNavBarProps> = ({ collapsed, setCollapsed }) => {
             >
                 {collapsed ? <span>&#9776;</span> : <span>&#10005;</span>}
             </button>
-            <a
-                href="/#"
-                className={`d-flex text-reset align-items-center mb-3 mb-md-0 me-md-auto text-decoration-none ${collapsed ? 'justify-content-center' : ''}`}
-            >
-                {!collapsed && <span className="fs-4 p-3" >MyApp</span>}
-            </a>
+
+            {upperBar.map((item, index) => (
+                <a
+                    key={index}
+                    href={item.link}
+                    className={`nav-link text-reset d-flex align-items-center mb-3 ${collapsed ? 'justify-content-center' : ''}`}
+                >
+                    <span className="fs-4">{item.icon}</span>
+                    {!collapsed && <span className="ms-2">{item.name}</span>}
+                </a>
+            ))}
             {!collapsed && <hr />}
-            <ul className="nav nav-pills flex-column mb-auto">
-                <li className="nav-item">
-                    <a href="#" className={`text-reset nav-link ${collapsed ? 'text-center p-2' : ''}`}>
-                        {!collapsed && <span role="img" aria-label="Features">✨</span>}
-                        {!collapsed && <span className="ms-2">Features</span>}
-                    </a>
-                </li>
-            </ul>
-            <hr />
+            {lowerBar.map((item, index) => (
+                <a
+                    key={index}
+                    href={item.link}
+                    className={`nav-link text-reset d-flex align-items-center mb-3 ${collapsed ? 'justify-content-center' : ''}`}
+                >
+                    <span className="fs-4">{item.icon}</span>
+                    {!collapsed && <span className="ms-2">{item.name}</span>}
+                </a>
+            ))}
         </div>
     );
 };
