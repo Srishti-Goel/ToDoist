@@ -1,26 +1,41 @@
 # To-Do App
 
-A simple full-stack To-Do application with user authentication.
+A simple full-stack To-Do application with user authentication and a modern, responsive UI.
 
 ## Features
 
 - **User Registration:**  
-  Users can sign up with their name, email, and password. Passwords must be at least 6 characters. Duplicate emails are not allowed.
+  Users can sign up with their name, email, and password. Duplicate emails are not allowed. Passwords must match and meet minimum requirements.
 
 - **User Login:**  
   Registered users can log in with their email and password. Error messages are shown for invalid credentials.
 
-- **Responsive Auth Pages:**  
-  Both Sign Up and Log In pages use Bootstrap for a modern, responsive design. Error handling and loading states are included.
+- **Global User State:**  
+  The app uses React Context to manage the logged-in user globally, so authentication state is available throughout the app.
+
+- **Logout:**  
+  Users can log out from anywhere, which clears their session and updates the navigation instantly.
+
+- **Responsive Sidebar Navigation:**  
+  A collapsible sidebar with icons (using react-icons) for navigation. The sidebar auto-collapses on route change or outside click, and its content updates based on authentication state.
+
+- **Profile & Conditional Navigation:**  
+  The sidebar shows "Profile" and "Logout" when logged in, and "Log-In" and "Sign-Up" when logged out.
 
 - **Reusable Auth Form:**  
-  The authentication pages share a unified, reusable form component for consistency and maintainability.
+  Both Sign Up and Log In pages use a unified, reusable form component for consistency and maintainability.
+
+- **Bootstrap Styling:**  
+  All pages use Bootstrap for a modern, responsive design.
 
 - **Server-Side Validation:**  
   The backend validates all fields and checks for existing emails before creating a user.
 
 - **MongoDB Integration:**  
   User data is stored securely in a MongoDB database.
+
+- **404 Page:**  
+  Any unknown route displays a friendly 404 Not Found page.
 
 ## Getting Started
 
