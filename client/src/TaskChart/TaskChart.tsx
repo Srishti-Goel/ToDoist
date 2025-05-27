@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import ProgressColumn from "./ProgressColumn";
 import { DragDropContext } from "@hello-pangea/dnd";
 import { useUser } from '../UserContext';
 import axios from "axios";
 import UserNeeded from "../UserNeeded";
+import ImageCarousel from "../ImageCarousel/ImageCarousel"; // <-- Import the carousel
 
 export const TaskStatus = {
     TODO: "TODO",
@@ -30,6 +31,9 @@ function TaskChart({ hobby }: TaskChartProps) {
     const [inProgressTasks, setInProgressTasks] = React.useState<Task[]>([]);
     const [doneTasks, setDoneTasks] = React.useState<Task[]>([]);
     const { user } = useUser();
+
+    // Add state for showing the carousel
+    const [showCarousel, setShowCarousel] = useState(false);
 
     // Fetch tasks for the user
     useEffect(() => {
@@ -140,6 +144,58 @@ function TaskChart({ hobby }: TaskChartProps) {
 
     return (
         <div className="w-100">
+            {/* Button to open Image Carousel */}
+            {hobby && (
+                <div className="d-flex justify-content-center my-3">
+                    <button
+                        className="btn btn-outline-primary"
+                        style={{ background: "var(--palette-1)", color: "var(--palette-4)", borderColor: "var(--palette-4)" }}
+                        onClick={() => setShowCarousel(true)}
+                    >
+                        Show {hobby} Inspiration Images
+                    </button>
+                </div>
+            )}
+            {/* Image Carousel Modal */}
+            {showCarousel && hobby && (
+                <div
+                    style={{
+                        position: "fixed",
+                        top: 0,
+                        left: 0,
+                        width: "100vw",
+                        height: "100vh",
+                        background: "rgba(0,0,0,0.35)",
+                        zIndex: 3000,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                    }}
+                    onClick={() => setShowCarousel(false)}
+                >
+                    <div
+                        style={{ position: "relative", width: "100vw", maxWidth: "100vw" }}
+                        onClick={e => e.stopPropagation()}
+                        className="full-width-page"
+                    >
+                        <button
+                            type="button"
+                            className="btn-close"
+                            aria-label="Close"
+                            style={{
+                                position: "absolute",
+                                top: 16,
+                                right: 32,
+                                zIndex: 10,
+                                filter: "invert(0.5)",
+                                opacity: 0.7,
+                            }}
+                            onClick={() => setShowCarousel(false)}
+                        />
+                        <ImageCarousel hobby={hobby} onClose={() => setShowCarousel(false)} />
+                    </div>
+                </div>
+            )}
             <DragDropContext onDragEnd={handleDragEnd}>
                 <div className="columns row">
                     {columns.map(col => (

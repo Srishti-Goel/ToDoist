@@ -1,4 +1,5 @@
 import React from 'react';
+import Form from '../utils/Form';
 
 interface Field {
     TBName: string;
@@ -35,6 +36,16 @@ const AuthForm: React.FC<AuthFormProps> = ({
     sideTitle,
     sideText
 }) => {
+    // Adapt fields for the reusable Form component
+    const formFields = fields.map(field => ({
+        name: field.id,
+        label: field.TBName,
+        type: field.type,
+        placeholder: field.TBName,
+        value: field.value,
+        onChange: field.onChange,
+    }));
+
     return (
         <div className="h-100 gradient-form d-flex justify-content-center align-items-center">
             <div className="container py-5 h-100">
@@ -49,30 +60,18 @@ const AuthForm: React.FC<AuthFormProps> = ({
                                                 style={{ width: '185px' }} alt="logo" className="mb-3" />
                                             <h1 className="mb-4">{title}</h1>
                                         </div>
-                                        <form onSubmit={onSubmit}>
-                                            <p className="mb-4">{description}</p>
-                                            {errorPresent && <div className="alert alert-danger" role="alert">{errorStr}</div>}
-                                            {fields.map(field => (
-                                                <div className="form-outline mb-4" key={field.id}>
-                                                    <input
-                                                        type={field.type}
-                                                        id={field.id}
-                                                        className="form-control"
-                                                        placeholder={field.TBName}
-                                                        onChange={e => field.onChange(e.target.value)}
-                                                        value={field.value}
-                                                    />
-                                                </div>
-                                            ))}
-                                            <div className="text-center pt-1 mb-5 pb-1">
-                                                <button className="btn btn-primary btn-block fa-lg mb-3" type="submit" disabled={loading}
-                                                    style={{ backgroundColor: "var(--palette-4)", borderColor: "var(--palette-4)", color: "#fff" }}>
-                                                    {loading ? buttonText + "..." : buttonText}
-                                                </button>
-                                                <br />
-                                                <a className="text-muted" href={alternateLink.href}>{alternateLink.text}</a>
-                                            </div>
-                                        </form>
+                                        <p className="mb-4">{description}</p>
+                                        <Form
+                                            fields={formFields}
+                                            onSubmit={onSubmit}
+                                            submitButtonName={buttonText}
+                                            loading={loading}
+                                            errorStr={errorStr}
+                                            errorPresent={errorPresent}
+                                        />
+                                        <div className="text-center pt-1 mb-5 pb-1">
+                                            <a className="text-muted" href={alternateLink.href}>{alternateLink.text}</a>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="col-lg-6 d-flex align-items-center gradient-custom-2 rounded-end">

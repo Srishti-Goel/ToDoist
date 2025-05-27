@@ -23,6 +23,7 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ collapsed }) => {
                 color: "#fff",
                 transition: "margin-left 0.2s"
             }}
+            className="full-width-page"
         >
             <button
                 onClick={() => navigate("/")}

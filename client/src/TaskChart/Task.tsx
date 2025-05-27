@@ -5,37 +5,63 @@ import { useUser } from '../UserContext';
 import { FaTrash, FaCheck } from "react-icons/fa";
 import axios from "axios";
 import UserNeeded from "../UserNeeded";
+import Form from "../utils/Form";
 
 interface TaskProps {
     id: string;
     title: string;
     description: string;
-    status: string;
+    status?: string;
     onUpdateTask?: () => void;
-    index: number;
-    hobby?: string; // Add this line
+    index?: number;
+    hobby?: string;
 }
 
 function Task({ id, title, description, index, status, onUpdateTask, hobby }: TaskProps) {
     const [editing, setEditing] = React.useState(false);
     const [editedTitle, setEditedTitle] = React.useState(title);
     const [editedDescription, setEditedDescription] = React.useState(description);
-    const [hobbyState, setHobbyState] = React.useState(hobby || "Work"); // Use hobby prop or default to empty string
+    const [hobbyState, setHobbyState] = React.useState(hobby || "Work");
+    const [loading, setLoading] = React.useState(false);
+    const [errorStr, setErrorStr] = React.useState<string | null>(null);
     const { user } = useUser();
-
-    const formFields = [
-        {Name: "title", Value: editedTitle, SetValue: setEditedTitle, Placeholder: "Title"},
-        {Name: "description", Value: editedDescription, SetValue: setEditedDescription, Placeholder: "Description"},
-        {Name: "hobby", Value: hobbyState, SetValue: setHobbyState, Placeholder: "Hobby"}
-    ];
 
     if (!user) {
         console.error("User context is not available");
         return <UserNeeded />;
     }
-    
+
+    const formFields = [
+        {
+            name: "title",
+            label: "Title",
+            type: "text",
+            placeholder: "Title",
+            value: editedTitle,
+            onChange: setEditedTitle,
+        },
+        {
+            name: "description",
+            label: "Description",
+            type: "text",
+            placeholder: "Description",
+            value: editedDescription,
+            onChange: setEditedDescription,
+        },
+        {
+            name: "hobby",
+            label: "Hobby",
+            type: "text",
+            placeholder: "Hobby",
+            value: hobbyState,
+            onChange: setHobbyState,
+        }
+    ];
+
     const handleSave = (e: React.FormEvent) => {
         e.preventDefault();
+        setLoading(true);
+        setErrorStr(null);
         axios.post(`http://localhost:3000/updatetask/${id}`, {
             title: editedTitle,
             description: editedDescription,
@@ -48,15 +74,18 @@ function Task({ id, title, description, index, status, onUpdateTask, hobby }: Ta
             if (onUpdateTask) onUpdateTask();
         })
         .catch((error) => {
+            setErrorStr("Error updating task");
             console.error(`Error updating task ${id}:`, error);
-        });
+        })
+        .finally(() => setLoading(false));
     };
-    
+
     const handleDoubleClick = () => {
         setEditing(!editing);
-        handleSave({} as React.FormEvent); // Save changes if switching to edit mode
+        // Optionally, you can auto-save on double click out of edit mode
+        // if (!editing) handleSave({} as React.FormEvent);
     };
-    
+
     const handleDelete = (e: React.FormEvent) => {
         e.preventDefault();
         axios.get(`http://localhost:3000/deletetask/${id}`, {
@@ -67,10 +96,11 @@ function Task({ id, title, description, index, status, onUpdateTask, hobby }: Ta
             if (onUpdateTask) onUpdateTask();
         })
         .catch((error) => {
+            setErrorStr("Error deleting task");
             console.error(`Error deleting task ${id}:`, error);
         });
     };
-    
+
     let taskContent;
     if (editing) {
         taskContent = (
@@ -84,37 +114,20 @@ function Task({ id, title, description, index, status, onUpdateTask, hobby }: Ta
                         className="btn btn-danger btn-sm ms-2"
                         onClick={handleDelete}
                         title="Delete Task"
-                        style={{ height: "32px", width: "32px", display: "flex", alignItems: "center", justifyContent: "center", opacity: "80%"}}
+                        style={{ height: "32px", width: "32px", display: "flex", alignItems: "center", justifyContent: "center", opacity: "80%" }}
                     >
                         <FaTrash size={16} />
                     </button>
                 </div>
-                <form onSubmit={handleSave}>
-                    {
-                        formFields.map((field, index) => (
-                            <div className="row align-items-center mb-3" key={index}>
-                                <label htmlFor={`task-${field.Name}-${id}`} className="col-3 col-form-label text-end pe-2">
-                                    {field.Placeholder}
-                                </label>
-                                <div className="col-9">
-                                    <input
-                                        type="text"
-                                        id={`task-${field.Name}-${id}`}
-                                        className="form-control"
-                                        placeholder={field.Placeholder}
-                                        onChange={e => field.SetValue(e.target.value)}
-                                        value={field.Value}
-                                    />
-                                </div>
-                            </div>
-                        ))
-                    }
-                    <div className="d-flex justify-content-end">
-                        <button type="submit" className="btn btn-primary ms-2 p-2">
-                            <FaCheck size={18} /> Save
-                        </button>
-                    </div>
-                </form>
+                <Form
+                    fields={formFields}
+                    onSubmit={handleSave}
+                    submitButtonName="Save"
+                    loading={loading}
+                    errorStr={errorStr || undefined}
+                    errorPresent={!!errorStr}
+                    className="mb-2"
+                />
             </div>
         );
     } else {

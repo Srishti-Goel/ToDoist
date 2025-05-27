@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import SingleSVG from "./SingleSVG";
+import { useUser } from "../UserContext";
+import axios from "axios";
 
 const hobbies = [
 	{
@@ -28,12 +30,37 @@ const getRandomPosition = () => ({
 });
 
 const AllSVG: React.FC = () => {
+
+    const { user } = useUser();
+
+    
 	const [items, setItems] = React.useState(
-		hobbies.map((hobby) => ({
-			...hobby,
+        hobbies.map((hobby) => ({
+            ...hobby,
 			position: getRandomPosition(),
 		}))
 	);
+    useEffect(() => {
+        if (!user) {
+            setItems([]);
+            return;
+        }
+        console.log("Fetching hobbies for user:", user.email);
+        axios.get("http://localhost:3000/hobbies", {
+            params: { userEmail: user.email },
+        })
+        .then((res) => {
+            const hobbiesWithPosition = res.data.map((hobby: any) => ({
+                ...hobby,
+                position: getRandomPosition(),
+            }));
+            setItems(hobbiesWithPosition);
+        })
+        .catch((err) => {
+            console.error("Failed to fetch hobbies:", err);
+            setItems([]);
+        });
+    }, [user]);
 	const [draggedIdx, setDraggedIdx] = React.useState<number | null>(null);
 	const svgRefs = React.useRef<(HTMLDivElement | null)[]>([]);
 

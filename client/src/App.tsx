@@ -3,6 +3,7 @@ import { HashRouter, Routes, Route, useLocation, useNavigate, useParams } from '
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './css/colors.css'
+import './css/index.css'
 
 import SignUp from './Auth/SignUp'
 import LogIn from './Auth/LogIn'
