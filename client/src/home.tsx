@@ -1,8 +1,25 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useUser } from './UserContext';
+import ImageCarousel from './ImageCarousel/ImageCarousel';
 const Home: React.FC = () => {
   const {user} = useUser();
+
+  const [hobby, setHobby] = React.useState<string | null>(null);
+
+  let inspoCarousel = <div></div>;
+
+  const closeCarousel = () => {
+    setHobby(null);
+    console.log("Carousel closed, hobby reset to null");
+  }
+
+  if (hobby !== null) {
+    console.log("Hobby is set to:", hobby);
+    inspoCarousel = <ImageCarousel hobby={hobby} onClose={closeCarousel}/>;
+  }
+
+
   let mainContent = <div></div>;
   if (user) {
     mainContent = <div>
@@ -14,6 +31,11 @@ const Home: React.FC = () => {
         >
           Go to Task Chart
         </Link>
+        <button
+          className="btn me-2"
+          style={{ backgroundColor: "var(--palette-4)", borderColor: "var(--palette-4)", color: "#fff" }}
+          onClick={() => setHobby("productivity")}>See carousel</button>
+        {inspoCarousel}
       </div>;
   } else {
     mainContent = <div>
