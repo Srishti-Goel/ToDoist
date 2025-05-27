@@ -2,7 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import React from 'react';
 import axios, { type AxiosResponse } from 'axios';
 import AuthForm from './AuthForm';
-import { useUser } from './UserContext';
+import { useUser } from '../UserContext';
 import { useNavigate } from 'react-router-dom';
 
 const LogIn: React.FC = () => {

@@ -4,14 +4,14 @@ import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-ro
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './css/colors.css'
 
-import SignUp from './SignUp'
-import LogIn from './LogIn'
+import SignUp from './Auth/SignUp'
+import LogIn from './Auth/LogIn'
 import SideNavBar from './navBar'
-import Home from './home'
+import Home from './Home'
 import NotFound from './NotFound'
 
 import { useUser } from './UserContext'
-const PALETTE_NUMBER = 6;
+const PALETTE_NUMBER = 5;
 
 function App() {
   const [collapsed, setCollapsed] = useState(false);
