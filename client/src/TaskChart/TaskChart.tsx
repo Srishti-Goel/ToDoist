@@ -21,7 +21,11 @@ type Task = {
     [key: string]: any;
 };
 
-function TaskChart() {
+type TaskChartProps = {
+    hobby?: string;
+};
+
+function TaskChart({ hobby }: TaskChartProps) {
     const [toDoTasks, setToDoTasks] = React.useState<Task[]>([]);
     const [inProgressTasks, setInProgressTasks] = React.useState<Task[]>([]);
     const [doneTasks, setDoneTasks] = React.useState<Task[]>([]);
@@ -31,7 +35,7 @@ function TaskChart() {
     useEffect(() => {
         if (!user) return;
         axios.get('http://localhost:3000/tasks', {
-            params: { userEmail: user.email }
+            params: { userEmail: user.email, hobby } // Pass hobby if provided
         })
         .then((response) => {
             setToDoTasks(response.data.ToDoTasks || []);
@@ -41,7 +45,7 @@ function TaskChart() {
         .catch((error) => {
             console.error("Error fetching tasks:", error);
         });
-    }, [user]);
+    }, [user, hobby]);
 
     const handleDragEnd = (result: any) => {
         if (!result.destination) return;
@@ -116,34 +120,39 @@ function TaskChart() {
         return <UserNeeded />;
     }
 
+    const columns = [
+        {
+            id: TaskStatus.TODO,
+            name: "To Do",
+            tasks: toDoTasks,
+        },
+        {
+            id: TaskStatus.IN_PROGRESS,
+            name: "In Progress",
+            tasks: inProgressTasks,
+        },
+        {
+            id: TaskStatus.DONE,
+            name: "Done",
+            tasks: doneTasks,
+        },
+    ];
+
     return (
         <div className="w-100">
             <DragDropContext onDragEnd={handleDragEnd}>
                 <div className="columns row">
-                    <ProgressColumn
-                        id={TaskStatus.TODO}
-                        name="To Do"
-                        tasks={toDoTasks}
-                        key={TaskStatus.TODO}
-                        colClass="col-12 col-md-4"
-                        onUpdateTask={handleTaskUpdate}
-                    />
-                    <ProgressColumn
-                        id={TaskStatus.IN_PROGRESS}
-                        name="In Progress"
-                        tasks={inProgressTasks}
-                        key={TaskStatus.IN_PROGRESS}
-                        colClass="col-12 col-md-4"
-                        onUpdateTask={handleTaskUpdate}
-                    />
-                    <ProgressColumn
-                        id={TaskStatus.DONE}
-                        name="Done"
-                        tasks={doneTasks}
-                        key={TaskStatus.DONE}
-                        colClass="col-12 col-md-4"
-                        onUpdateTask={handleTaskUpdate}
-                    />
+                    {columns.map(col => (
+                        <ProgressColumn
+                            id={col.id}
+                            name={col.name}
+                            tasks={col.tasks}
+                            key={col.id}
+                            colClass="col-12 col-md-4"
+                            onUpdateTask={handleTaskUpdate}
+                            hobby={hobby} // Pass hobby to ProgressColumn
+                        />
+                    ))}
                 </div>
             </DragDropContext>
         </div>

@@ -5,6 +5,7 @@ const cors = require('cors');
 
 const authRouter = require('./auth');
 const tasksRouter = require('./tasks');
+const hobbiesRouter = require('./hobbies');
 
 const app = express();
 app.use(express.json());
@@ -14,6 +15,7 @@ app.use(cors());
 // Use routers
 app.use(authRouter);
 app.use(tasksRouter);
+app.use(hobbiesRouter);
 
 DbMongoose.connect('mongodb+srv://srishtigoel:wvJ3KolP1mZugYJT@cluster0.h8dx7ug.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0');
 DbMongoose.connection.on('connected', () => {

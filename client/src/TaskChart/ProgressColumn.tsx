@@ -10,11 +10,12 @@ interface ProgressColumnProps {
     id: string;
     name: string;
     tasks: any[];
+    hobby?: string;
     onUpdateTask?: () => void;
     colClass?: string;
 }
 
-function ProgressColumn ({ id, name, tasks, colClass, onUpdateTask }: ProgressColumnProps) {
+function ProgressColumn ({ id, name, tasks, colClass, onUpdateTask, hobby }: ProgressColumnProps) {
     const { user } = useUser();
 
     const addTask = () => {
@@ -22,7 +23,7 @@ function ProgressColumn ({ id, name, tasks, colClass, onUpdateTask }: ProgressCo
             console.warn("User not logged in, tasks will not be saved.");
             return;
         }
-        const newTask = { title: "New Task", description: "New task description", status: id, userEmail: user.email };
+        const newTask = { title: "New Task", description: "New task description", status: id, userEmail: user.email, hobby: hobby || "Work" };
         axios.post('http://localhost:3000/tasks', newTask)
             .then(() => {
                 if (onUpdateTask) onUpdateTask();
@@ -36,6 +37,13 @@ function ProgressColumn ({ id, name, tasks, colClass, onUpdateTask }: ProgressCo
         console.error("User context is not available");
         return <UserNeeded />;
     }
+
+    // Filter tasks by hobby if hobby is provided
+    const filteredTasks = hobby
+        ? tasks.filter(task => task.hobby === hobby)
+        : tasks;
+    console.log(`Filtered tasks for hobby "${hobby}":`, filteredTasks);
+
     return (
         <div className={`${colClass ?? "col-12 col-md mb-3"} d-flex flex-column p-3`} style={{ minWidth: 220 }}>
             <Droppable droppableId={id}>
@@ -54,10 +62,10 @@ function ProgressColumn ({ id, name, tasks, colClass, onUpdateTask }: ProgressCo
                     />
                 </div>
                 <div className="card-body border-0 rounded-0" style={{ background: "var(--palette-4)", minHeight: "300px" }}>
-                    {tasks.length === 0 ? (
+                    {filteredTasks.length === 0 ? (
                         <div className="text-muted text-center">No tasks</div>
                     ) : (
-                        tasks.map((task, index) => (
+                        filteredTasks.map((task, index) => (
                             <Task
                             key={task.id}
                             id={task.id}
@@ -65,6 +73,7 @@ function ProgressColumn ({ id, name, tasks, colClass, onUpdateTask }: ProgressCo
                             description={task.description}
                             index={index}
                             status={id}
+                            hobby={task.hobby}
                             onUpdateTask={onUpdateTask}
                             />
                         ))

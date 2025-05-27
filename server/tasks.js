@@ -3,20 +3,27 @@ const router = express.Router();
 const UserTasks = require('./models/Tasks'); // Update to your new schema file
 const { v4: uuidv4 } = require('uuid');
 
-// Get all tasks for a specific user by email
+// Get all tasks for a specific user by email, optionally filtered by hobby via route param
 router.get('/tasks', async (req, res) => {
-    const { userEmail } = req.query;
+    const { userEmail, hobby } = req.query;
     if (!userEmail) {
         return res.status(400).json({ message: 'userEmail query parameter is required' });
     }
     try {
         const userTasks = await UserTasks.findOne({ userEmail });
         if (!userTasks) {
-            // Return empty arrays if user not found
             return res.json({
                 ToDoTasks: [],
                 InProgressTasks: [],
                 DoneTasks: []
+            });
+        }
+        if (hobby) {
+            const filterByHobby = arr => arr.filter(task => task.hobby === hobby);
+            return res.json({
+                ToDoTasks: filterByHobby(userTasks.ToDoTasks),
+                InProgressTasks: filterByHobby(userTasks.InProgressTasks),
+                DoneTasks: filterByHobby(userTasks.DoneTasks)
             });
         }
         res.json(userTasks);
@@ -27,15 +34,14 @@ router.get('/tasks', async (req, res) => {
 
 // Create a new task in the appropriate status array
 router.post('/tasks', async (req, res) => {
-    const { title, description, status, userEmail } = req.body;
+    const { title, description, status, userEmail, hobby } = req.body;
     if (!title || !description || !status || !userEmail) {
         return res.status(400).json({ message: 'Title, description, status, and userEmail are required' });
     }
-    const task = { id: uuidv4(), title, description };
+    const task = { id: uuidv4(), title, description, hobby: hobby || "Work" }; // <-- add hobby
     try {
         let userTasks = await UserTasks.findOne({ userEmail });
         if (!userTasks) {
-            // Create new user document if not exists
             userTasks = new UserTasks({
                 userEmail,
                 ToDoTasks: [],
@@ -58,7 +64,7 @@ router.post('/tasks', async (req, res) => {
 // Update a task by ID and status
 router.post('/updatetask/:id', async (req, res) => {
     const { id } = req.params;
-    const { title, description, status, userEmail } = req.body;
+    const { title, description, status, userEmail, hobby } = req.body;
     if (!title || !description || !status || !userEmail) {
         return res.status(400).json({ message: 'Title, description, status, and userEmail are required' });
     }
@@ -72,7 +78,7 @@ router.post('/updatetask/:id', async (req, res) => {
         userTasks.DoneTasks = userTasks.DoneTasks.filter(task => task.id !== id);
 
         // Add updated task to the correct array
-        const updatedTask = { id, title, description };
+        const updatedTask = { id, title, description, hobby: hobby || "Work" }; // <-- add hobby
         if (status === "TODO") userTasks.ToDoTasks.push(updatedTask);
         else if (status === "IN_PROGRESS") userTasks.InProgressTasks.push(updatedTask);
         else if (status === "DONE") userTasks.DoneTasks.push(updatedTask);

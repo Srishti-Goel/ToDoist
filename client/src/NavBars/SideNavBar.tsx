@@ -1,26 +1,45 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import {
     FaHome, FaSignOutAlt, FaSignInAlt,
     FaUserPlus, FaBars, FaUser
 } from 'react-icons/fa';
 import { useUser } from '../UserContext';
+import axios from 'axios';
+
+const serverUrl = 'http://localhost:3000';
 
 interface SideNavBarProps {
   collapsed: boolean;
   setCollapsed: (value: boolean) => void;
 }
 
-
-
 const SideNavBar: React.FC<SideNavBarProps> = ({ collapsed, setCollapsed }) => {
     const location = useLocation();
     const { user } = useUser();
+    const [hobbies, setHobbies] = useState<string[]>([]);
+
+    // Fetch hobbies for the user
+    useEffect(() => {
+        if (user?.email) {
+            axios.get(serverUrl + '/hobbies/names', { params: { userEmail: user.email } })
+                .then(res => setHobbies(res.data))
+                .catch(() => setHobbies([]));
+        } else {
+            setHobbies([]);
+        }
+        console.log("Hobbies:", hobbies);
+    }, [user]);
 
     // List of elements in the upper part of the sidebar
     const upperBar = [
         { name: 'Home', icon: <FaHome size={28}/>, link: '/' },
         { name: "Task Chart", icon: <FaBars size={28}/>, link: '/taskChart' },
+        ...hobbies.map(hobby => ({
+            name: hobby,
+            icon: <FaBars size={28}/>,
+            link: `/taskChart/${encodeURIComponent(hobby)}`
+        }))
     ];
 
     const sideBarList = (fields: { name: string; icon: any; link: string }[]) => (
@@ -64,6 +83,13 @@ const SideNavBar: React.FC<SideNavBarProps> = ({ collapsed, setCollapsed }) => {
 
     // Collapse navbar on route change
     useEffect(() => {
+        if (user?.email) {
+            axios.get(serverUrl + '/hobbies/names', { params: { userEmail: user.email } })
+                .then(res => setHobbies(res.data))
+                .catch(() => setHobbies([]));
+        } else {
+            setHobbies([]);
+        }
         setCollapsed(true);
     }, [location]);
 

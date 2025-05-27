@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { HashRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
+import { HashRouter, Routes, Route, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './css/colors.css'
@@ -7,12 +7,13 @@ import './css/colors.css'
 import SignUp from './Auth/SignUp'
 import LogIn from './Auth/LogIn'
 import SideNavBar from './NavBars/SideNavBar'
-import Home from './Home'
+import Home from './Home/Home'
 import NotFound from './PageNotFound'
 
 import { useUser } from './UserContext'
 import TaskChart from './TaskChart/TaskChart'
 import TopNavBar from './NavBars/TopNavBar'
+import Profile from './Profile/Profile'
 const PALETTE_NUMBER = 1;
 
 function App() {
@@ -82,9 +83,11 @@ function App() {
           <Routes>
             <Route path="/login" element={<LogIn />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/" element={<Home />} />
             <Route path="/logout" element={<Logout />} />
             <Route path="/taskChart" element={<TaskChart />} />
+            <Route path="/taskChart/:hobby" element={<TaskChartWithHobby />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
@@ -99,4 +102,9 @@ export default function AppWithRouter() {
       <App />
     </HashRouter>
   );
+}
+
+function TaskChartWithHobby() {
+  const { hobby } = useParams();
+  return <TaskChart hobby={hobby} />;
 }

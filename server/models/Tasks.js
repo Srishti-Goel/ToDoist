@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const TaskItemSchema = new mongoose.Schema({
     id: { type: String, required: true, unique: true }, // You can use uuid or ObjectId as string
     title: { type: String, required: true },
-    description: { type: String, required: true }
+    description: { type: String, required: true },
+    hobby: { type: String, required: true, default: "Work" }, // Added default value
 }, { _id: false });
 
 const UserTasksSchema = new mongoose.Schema({

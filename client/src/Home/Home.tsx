@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useUser } from './UserContext';
-import ImageCarousel from './ImageCarousel/ImageCarousel';
+import { useUser } from '../UserContext';
+import ImageCarousel from '../ImageCarousel/ImageCarousel';
+import AllSVG from './AllSVG';
 const Home: React.FC = () => {
   const {user} = useUser();
 
@@ -36,6 +37,8 @@ const Home: React.FC = () => {
           style={{ backgroundColor: "var(--palette-4)", borderColor: "var(--palette-4)", color: "#fff" }}
           onClick={() => setHobby("productivity")}>See carousel</button>
         {inspoCarousel}
+
+        <AllSVG />
       </div>;
   } else {
     mainContent = <div>
