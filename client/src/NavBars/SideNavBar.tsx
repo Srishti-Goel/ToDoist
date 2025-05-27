@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import {
-    FaHome, FaCog, FaQuestion, FaSignOutAlt, FaSignInAlt, FaUserPlus,
-    FaBars, FaTimes,
-    FaUser
+    FaHome, FaSignOutAlt, FaSignInAlt,
+    FaUserPlus, FaBars, FaUser
 } from 'react-icons/fa';
-import { useUser } from './UserContext';
+import { useUser } from '../UserContext';
 
 interface SideNavBarProps {
   collapsed: boolean;
@@ -16,24 +15,34 @@ interface SideNavBarProps {
 
 const SideNavBar: React.FC<SideNavBarProps> = ({ collapsed, setCollapsed }) => {
     const location = useLocation();
-    const { user, setUser } = useUser();
+    const { user } = useUser();
 
     // List of elements in the upper part of the sidebar
     const upperBar = [
         { name: 'Home', icon: <FaHome size={28}/>, link: '/' },
+        { name: "Task Chart", icon: <FaBars size={28}/>, link: '/taskChart' },
     ];
 
-    const sideBarList = (fields: { name: string; icon: JSX.Element; link: string }[]) => (
+    const sideBarList = (fields: { name: string; icon: any; link: string }[]) => (
         fields.map((item, index) => (
             <Link
                 key={index}
                 to={item.link}
                 className={`nav-link text-reset d-flex align-items-center mb-3 ${collapsed ? 'justify-content-center' : ''}`}
                 onClick={() => setCollapsed(true)}
-                style={{ textDecoration: 'none' }}
+                style={{
+                    textDecoration: 'none',
+                    paddingLeft: collapsed ? 0 : 16, // Add uniform left padding when expanded
+                    paddingRight: collapsed ? 0 : 16, // Optional: add right padding for symmetry
+                    color: 'var(--palette-4)',
+                }}
             >
-                {!collapsed && <span className="fs-4" style={{ color: 'var(--palette-1)', opacity: '100%' }}>{item.icon}</span>}
-                {!collapsed && <span className="ms-2" style={{ color: 'var(--palette-1)' }}>{item.name}</span>}
+                {!collapsed &&
+                    <div>
+                        <span className="fs-4" style={{ color: 'var(--palette-1)', opacity: '100%' }}>{item.icon}</span>
+                        <span className="ms-2" style={{ color: 'var(--palette-1)' }}>{item.name}</span>
+                    </div>
+                }
             </Link>
         ))
     );
@@ -77,22 +86,24 @@ const SideNavBar: React.FC<SideNavBarProps> = ({ collapsed, setCollapsed }) => {
 
     return (
         <div
-            className={`d-flex flex-column flex-shrink-0 position-fixed top-0 start-0 h-100 ${collapsed ? 'bg-transparent' : ''} p-3`}
+            className={`d-flex flex-column flex-shrink-0 position-fixed top-0 start-0 h-100 ${collapsed ? 'bg-transparent' : ''} sidebar`}
             style={{
-                width: collapsed ? '80px' : '220px',
+                width: collapsed ? '50px' : '220px',
+                height: '100vh',
+                zIndex: 1000,
                 backgroundColor: collapsed
                     ? 'transparent'
                     : 'var(--palette-5)',
                 transition: 'width 0.3s, background-color 0.3s',
                 color: collapsed ? 'transparent' : "var(--palette-6)",
-                opacity:'80%'
+                opacity:'90%'
             }}
         >
             <button
                 className="btn btn-outline-secondary mb-3 mt-2 align-self-end"
                 style={{
                     width: '40px',
-                    marginRight: collapsed ? '10px' : '0',
+                    marginRight: '0',
                     color: !collapsed ? '#fff' : undefined,
                     borderColor: 'transparent',
                     background: 'transparent'

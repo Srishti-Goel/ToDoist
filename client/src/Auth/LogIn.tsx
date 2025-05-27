@@ -11,7 +11,7 @@ const LogIn: React.FC = () => {
     const [errorStr, setErrorStr] = React.useState('');
     const [errorPresent, setErrorPresent] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
-    const { user, setUser } = useUser();
+    const { setUser } = useUser();
     const navigate = useNavigate();
 
     const fields = [

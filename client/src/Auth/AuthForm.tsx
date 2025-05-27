@@ -1,5 +1,4 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
 
 interface Field {
     TBName: string;
@@ -36,8 +35,6 @@ const AuthForm: React.FC<AuthFormProps> = ({
     sideTitle,
     sideText
 }) => {
-    const navigate = useNavigate();
-
     return (
         <div className="h-100 gradient-form d-flex justify-content-center align-items-center">
             <div className="container py-5 h-100">
@@ -68,7 +65,8 @@ const AuthForm: React.FC<AuthFormProps> = ({
                                                 </div>
                                             ))}
                                             <div className="text-center pt-1 mb-5 pb-1">
-                                                <button className="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" type="submit" disabled={loading}>
+                                                <button className="btn btn-primary btn-block fa-lg mb-3" type="submit" disabled={loading}
+                                                    style={{ backgroundColor: "var(--palette-4)", borderColor: "var(--palette-4)", color: "#fff" }}>
                                                     {loading ? buttonText + "..." : buttonText}
                                                 </button>
                                                 <br />

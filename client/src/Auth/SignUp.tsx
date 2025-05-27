@@ -40,6 +40,7 @@ const SignUp: React.FC = () => {
         }
         axios.post('http://localhost:3000/register', { name, email, password })
             .then((response: AxiosResponse) => {
+                void(response); // TypeScript fix for unused response
                 setUser({ name, email }); // Set user after successful registration
                 navigate('/');
             })

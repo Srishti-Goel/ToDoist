@@ -1,12 +1,12 @@
-import React from "react";
 import Task from "./Task";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Droppable } from "@hello-pangea/dnd";
 import { FaPlus } from "react-icons/fa";
 import { useUser } from '../UserContext';
 import axios from "axios";
+import UserNeeded from "../UserNeeded";
 
-interface TaskProgressColumnProps {
+interface ProgressColumnProps {
     id: string;
     name: string;
     tasks: any[];
@@ -14,7 +14,7 @@ interface TaskProgressColumnProps {
     colClass?: string;
 }
 
-function TaskProgressColumn ({ id, name, tasks, colClass, onUpdateTask }: TaskProgressColumnProps) {
+function ProgressColumn ({ id, name, tasks, colClass, onUpdateTask }: ProgressColumnProps) {
     const { user } = useUser();
 
     const addTask = () => {
@@ -34,19 +34,24 @@ function TaskProgressColumn ({ id, name, tasks, colClass, onUpdateTask }: TaskPr
 
     if (!user) {
         console.error("User context is not available");
-        return <div className="alert alert-danger" role="alert">User context is not available.</div>;
+        return <UserNeeded />;
     }
     return (
-        <div className={`${colClass ?? "col-12 col-md mb-3"} d-flex flex-column p-3`}>
+        <div className={`${colClass ?? "col-12 col-md mb-3"} d-flex flex-column p-3`} style={{ minWidth: 220 }}>
             <Droppable droppableId={id}>
-            {(provided, snapshot) => (
+            {(provided) => (
             <div className="card shadow-sm h-100 border-0 rounded-0"
                 ref={provided.innerRef}
                 {...provided.droppableProps}
             >
-                <div className="card-header text-white text-center border-0 rounded-0" style={{ background: "var(--palette-4)" }}>
+                <div className="card-header text-white border-0 rounded-0 d-flex justify-content-between align-items-center" style={{ background: "var(--palette-4)" }}>
                     <h4 className="mb-0">{name}</h4>
-                    <FaPlus className="text-white" style={{ cursor: "pointer" }} onClick={addTask}/>
+                    <FaPlus
+                        className="text-white ms-2"
+                        style={{ cursor: "pointer" }}
+                        onClick={addTask}
+                        title="Add Task"
+                    />
                 </div>
                 <div className="card-body border-0 rounded-0" style={{ background: "var(--palette-4)", minHeight: "300px" }}>
                     {tasks.length === 0 ? (
@@ -73,4 +78,4 @@ function TaskProgressColumn ({ id, name, tasks, colClass, onUpdateTask }: TaskPr
     )
 }
 
-export default TaskProgressColumn;
+export default ProgressColumn;

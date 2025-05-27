@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react'
-import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
+import { HashRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './css/colors.css'
 
 import SignUp from './Auth/SignUp'
 import LogIn from './Auth/LogIn'
-import SideNavBar from './navBar'
+import SideNavBar from './NavBars/SideNavBar'
 import Home from './Home'
-import NotFound from './NotFound'
+import NotFound from './PageNotFound'
 
 import { useUser } from './UserContext'
-const PALETTE_NUMBER = 5;
+import TaskChart from './TaskChart/TaskChart'
+import TopNavBar from './NavBars/TopNavBar'
+const PALETTE_NUMBER = 1;
 
 function App() {
   const [collapsed, setCollapsed] = useState(false);
@@ -37,23 +39,64 @@ function App() {
   }, []);
 
   return (
-    <div style={{ height: '100vh', overflow: 'hidden', color: `var(--palette-6)` }}>
-      <Routes>
-        <Route path="/login" element={<LogIn />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/" element={<Home />} />
-        <Route path="/logout" element={<Logout />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-      <SideNavBar collapsed={collapsed} setCollapsed={setCollapsed} />
+    <div
+      style={{
+        minHeight: '100vh',
+        color: `var(--palette-6)`,
+        background: 'var(--palette-1)',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      {/* TopNavBar now contains the SideNavBar for seamless integration */}
+      <div
+        style={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 1020,
+          background: 'var(--palette-1)',
+          borderBottom: '1px solid var(--palette-3)',
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'stretch',
+        }}
+      >
+        <div style={{
+          display: 'flex',
+          alignItems: 'stretch',
+          height: '100%',
+        }}>
+          <SideNavBar collapsed={collapsed} setCollapsed={setCollapsed} />
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <TopNavBar collapsed={collapsed} />
+        </div>
+      </div>
+      <div
+        className="flex-grow-1 d-flex flex-column"
+        style={{
+          minWidth: 0,
+        }}
+      >
+        <div style={{ padding: '1.5rem 1rem 1rem 1rem', flex: 1 }}>
+          <Routes>
+            <Route path="/login" element={<LogIn />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/logout" element={<Logout />} />
+            <Route path="/taskChart" element={<TaskChart />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
+      </div>
     </div>
   )
 }
 
 export default function AppWithRouter() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <App />
-    </BrowserRouter>
+    </HashRouter>
   );
 }

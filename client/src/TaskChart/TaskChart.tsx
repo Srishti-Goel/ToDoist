@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import TaskProgressColumn from "./TaskProgressColumns";
+import ProgressColumn from "./ProgressColumn";
 import { DragDropContext } from "@hello-pangea/dnd";
 import { useUser } from '../UserContext';
 import axios from "axios";
-import { FaPlus } from "react-icons/fa";
+import UserNeeded from "../UserNeeded";
 
 export const TaskStatus = {
     TODO: "TODO",
@@ -21,7 +21,7 @@ type Task = {
     [key: string]: any;
 };
 
-function DragAndDrop() {
+function TaskChart() {
     const [toDoTasks, setToDoTasks] = React.useState<Task[]>([]);
     const [inProgressTasks, setInProgressTasks] = React.useState<Task[]>([]);
     const [doneTasks, setDoneTasks] = React.useState<Task[]>([]);
@@ -95,35 +95,6 @@ function DragAndDrop() {
         });
     };
 
-    // Add a new task to "To Do"
-    const addTask = () => {
-        if (!user) {
-            console.warn("User not logged in, tasks will not be saved.");
-            return;
-        }
-        const newTask = {
-            title: "New Task",
-            description: "New task description",
-            status: TaskStatus.TODO,
-            userEmail: user.email
-        };
-        axios.post('http://localhost:3000/tasks', newTask)
-            .then(() => {
-                // Re-fetch tasks to update UI
-                return axios.get('http://localhost:3000/tasks', {
-                    params: { userEmail: user.email }
-                });
-            })
-            .then((response) => {
-                setToDoTasks(response.data.ToDoTasks || []);
-                setInProgressTasks(response.data.InProgressTasks || []);
-                setDoneTasks(response.data.DoneTasks || []);
-            })
-            .catch((error) => {
-                console.error("Error creating task:", error);
-            });
-    };
-
     // Update all lists after edit/delete
     const handleTaskUpdate = () => {
         if (!user) return;
@@ -140,12 +111,16 @@ function DragAndDrop() {
         });
     };
 
+    if (!user) {
+        console.error("User context is not available");
+        return <UserNeeded />;
+    }
+
     return (
         <div className="w-100">
-            <hr />
             <DragDropContext onDragEnd={handleDragEnd}>
                 <div className="columns row">
-                    <TaskProgressColumn
+                    <ProgressColumn
                         id={TaskStatus.TODO}
                         name="To Do"
                         tasks={toDoTasks}
@@ -153,7 +128,7 @@ function DragAndDrop() {
                         colClass="col-12 col-md-4"
                         onUpdateTask={handleTaskUpdate}
                     />
-                    <TaskProgressColumn
+                    <ProgressColumn
                         id={TaskStatus.IN_PROGRESS}
                         name="In Progress"
                         tasks={inProgressTasks}
@@ -161,7 +136,7 @@ function DragAndDrop() {
                         colClass="col-12 col-md-4"
                         onUpdateTask={handleTaskUpdate}
                     />
-                    <TaskProgressColumn
+                    <ProgressColumn
                         id={TaskStatus.DONE}
                         name="Done"
                         tasks={doneTasks}
@@ -171,14 +146,7 @@ function DragAndDrop() {
                     />
                 </div>
             </DragDropContext>
-            <button
-                className="btn btn-primary mt-3"
-                onClick={addTask}
-            >
-                <FaPlus className="me-2" />
-                Create Task
-            </button>
         </div>
     );
 }
-export default DragAndDrop;
+export default TaskChart;
