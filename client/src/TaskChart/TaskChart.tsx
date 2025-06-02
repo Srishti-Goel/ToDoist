@@ -23,7 +23,7 @@ type Task = {
 };
 
 type TaskChartProps = {
-    hobby?: string;
+    hobby?: any;
 };
 
 function TaskChart({ hobby }: TaskChartProps) {
@@ -39,7 +39,7 @@ function TaskChart({ hobby }: TaskChartProps) {
     useEffect(() => {
         if (!user) return;
         axios.get('http://localhost:3000/tasks', {
-            params: { userEmail: user.email, hobby } // Pass hobby if provided
+            params: { userEmail: user.email, hobby: hobby.name } // Pass hobby if provided
         })
         .then((response) => {
             setToDoTasks(response.data.ToDoTasks || []);
@@ -152,7 +152,7 @@ function TaskChart({ hobby }: TaskChartProps) {
                         style={{ background: "var(--palette-1)", color: "var(--palette-4)", borderColor: "var(--palette-4)" }}
                         onClick={() => setShowCarousel(true)}
                     >
-                        Show {hobby} Inspiration Images
+                        Show {hobby.name} Inspiration Images
                     </button>
                 </div>
             )}
@@ -192,7 +192,7 @@ function TaskChart({ hobby }: TaskChartProps) {
                             }}
                             onClick={() => setShowCarousel(false)}
                         />
-                        <ImageCarousel hobby={hobby} onClose={() => setShowCarousel(false)} />
+                        <ImageCarousel hobby={hobby.name} onClose={() => setShowCarousel(false)} />
                     </div>
                 </div>
             )}
@@ -206,7 +206,7 @@ function TaskChart({ hobby }: TaskChartProps) {
                             key={col.id}
                             colClass="col-12 col-md-4"
                             onUpdateTask={handleTaskUpdate}
-                            hobby={hobby} // Pass hobby to ProgressColumn
+                            hobby={hobby.name} // Pass hobby to ProgressColumn
                         />
                     ))}
                 </div>

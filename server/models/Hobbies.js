@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const HobbySchema = new mongoose.Schema({
+    id: { type: String, required: true, unique: true }, // You can use uuid or ObjectId as string
     name: { type: String, required: true },
     color: { type: String, required: true },
     inspirationImages: [{ type: String }], // Array of image URLs

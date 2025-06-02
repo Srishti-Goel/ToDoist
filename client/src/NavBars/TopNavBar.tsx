@@ -1,4 +1,5 @@
 import React from "react";
+import { FaUser } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 interface TopNavBarProps {
@@ -47,7 +48,7 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ collapsed }) => {
                 margin: 0,
                 padding: 0
             }}>
-                <li>
+                {/* <li>
                     <button
                         style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", padding: 0, font: "inherit" }}
                         onClick={() => navigate("/about")}
@@ -61,6 +62,14 @@ const TopNavBar: React.FC<TopNavBarProps> = ({ collapsed }) => {
                         onClick={() => navigate("/contact")}
                     >
                         Contact
+                    </button>
+                </li> */}
+                <li>
+                    <button
+                        style={{ background: "none", border: "none", color: "#fff", cursor: "pointer", padding: 0, font: "inherit" }}
+                        onClick={() => navigate("/profile")}
+                    >
+                        <FaUser size={28} />
                     </button>
                 </li>
             </ul>

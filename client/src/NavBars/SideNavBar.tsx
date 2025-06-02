@@ -8,6 +8,7 @@ import { useUser } from '../UserContext';
 import axios from 'axios';
 
 const serverUrl = 'http://localhost:3000';
+const iconSize = 40;
 
 interface SideNavBarProps {
   collapsed: boolean;
@@ -17,7 +18,7 @@ interface SideNavBarProps {
 const SideNavBar: React.FC<SideNavBarProps> = ({ collapsed, setCollapsed }) => {
     const location = useLocation();
     const { user } = useUser();
-    const [hobbies, setHobbies] = useState<string[]>([]);
+    const [hobbies, setHobbies] = useState<any[]>([]);
 
     // Fetch hobbies for the user
     useEffect(() => {
@@ -33,11 +34,19 @@ const SideNavBar: React.FC<SideNavBarProps> = ({ collapsed, setCollapsed }) => {
 
     // List of elements in the upper part of the sidebar
     const upperBar = [
-        { name: 'Home', icon: <FaHome size={28}/>, link: '/' },
-        { name: "Task Chart", icon: <FaBars size={28}/>, link: '/taskChart' },
+        { name: 'Home', icon: <FaHome size={iconSize}/>, link: '/' },
+        { name: "Task Chart", icon: <FaBars size={iconSize}/>, link: '/taskChart' },
         ...hobbies.map(hobby => ({
-            name: hobby,
-            icon: <FaBars size={28}/>,
+            name: hobby.name,
+            icon: <img
+                    src={hobby.mainImage}
+                    alt={hobby.name}
+                    style={{
+                    objectFit: "cover",
+                    width: iconSize,
+                    height: iconSize,
+                    }}
+                />,
             link: `/taskChart/${encodeURIComponent(hobby)}`
         }))
     ];
@@ -68,10 +77,10 @@ const SideNavBar: React.FC<SideNavBarProps> = ({ collapsed, setCollapsed }) => {
 
     // List of elements in the lower part of the sidebar
     const lowerBarAll = [
-        { name: 'Profile', icon: <FaUser size={28} />, link: '/profile' },
-        { name: 'Logout', icon: <FaSignOutAlt size={28} />, link: '/logout' },
-        { name: 'Log-In', icon: <FaSignInAlt size={28} />, link: '/login' },
-        { name: 'Sign-Up', icon: <FaUserPlus size={28} />, link: '/signup' },
+        { name: 'Profile', icon: <FaUser size={iconSize} />, link: '/profile' },
+        { name: 'Logout', icon: <FaSignOutAlt size={iconSize} />, link: '/logout' },
+        { name: 'Log-In', icon: <FaSignInAlt size={iconSize} />, link: '/login' },
+        { name: 'Sign-Up', icon: <FaUserPlus size={iconSize} />, link: '/signup' },
     ];
 
     // Filter lowerBar based on user state
@@ -108,6 +117,17 @@ const SideNavBar: React.FC<SideNavBarProps> = ({ collapsed, setCollapsed }) => {
         };
     }, [setCollapsed]);
 
+    const handleOpenClose = () => {
+        if (user?.email) {
+            axios.get(serverUrl + '/hobbies/names', { params: { userEmail: user.email } })
+                .then(res => setHobbies(res.data))
+                .catch(() => setHobbies([]));
+        } else {
+            setHobbies([]);
+        }
+        setCollapsed(!collapsed);
+    }
+
 
 
     return (
@@ -134,7 +154,7 @@ const SideNavBar: React.FC<SideNavBarProps> = ({ collapsed, setCollapsed }) => {
                     borderColor: 'transparent',
                     background: 'transparent'
                 }}
-                onClick={() => setCollapsed(!collapsed)}
+                onClick={handleOpenClose}
                 aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
             >
                 {collapsed ? <span style={{fontSize:'20pt'}}>&#9776;</span> : <span style={{fontSize:'20pt'}}>&#10005;</span>}

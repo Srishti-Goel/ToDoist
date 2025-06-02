@@ -192,6 +192,8 @@ const SingleSVG: React.FC<SingleSVGProps> = ({
     </div>
   );
 
+  console.log(hobby.mainImage);
+
   return (
     <div
       draggable={draggable}
@@ -199,28 +201,32 @@ const SingleSVG: React.FC<SingleSVGProps> = ({
         display: "inline-block",
         cursor: "pointer",
         userSelect: "none",
-        padding: 12,
+        padding: showDetails ? 12 : 0,
         borderRadius: 12,
-        background: "var(--palette-1)",
-        border: "none",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
+        background: "transparent",
         minWidth: 64,
         textAlign: "center",
         margin: 8,
+        animationName: "animation_6_1",
+        animationDuration: "2s",
+        animationDelay: "0s",
+        animationIterationCount: "infinite",
+        animationDirection: "alternate",
+        animationFillMode: "both",
       }}
-      title={hobby.name}
+      title={hobby?.name || "Untitled Hobby"}
       onDoubleClick={handleDoubleClick}
+      className=""
     >
       <img
-        src={hobby.mainImage}
+        src={hobby.mainImage || ""}
         alt={hobby.name}
         style={{
           width: 64,
           height: 64,
           objectFit: "cover",
-          borderRadius: "50%",
-          border: "none",
-          background: "#fff",
+          minWidth: "200px",
+          minHeight: "200px",
         }}
       />
       {showDetails && details}
